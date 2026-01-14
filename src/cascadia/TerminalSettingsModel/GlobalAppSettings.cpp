@@ -10,6 +10,7 @@
 #include "GlobalAppSettings.g.cpp"
 
 #include "MediaResourceSupport.h"
+#include "Workspace.h"
 
 using namespace Microsoft::Terminal::Settings::Model;
 using namespace winrt::Microsoft::Terminal::Settings::Model::implementation;
@@ -100,6 +101,14 @@ winrt::com_ptr<GlobalAppSettings> GlobalAppSettings::Copy() const
         for (const auto& src : *_DisabledProfileSources)
         {
             globals->_DisabledProfileSources->Append(src);
+        }
+    }
+    if (_Workspaces)
+    {
+        globals->_Workspaces = winrt::single_threaded_vector<Model::Workspace>();
+        for (const auto& entry : *_Workspaces)
+        {
+            globals->_Workspaces->Append(winrt::get_self<Workspace>(entry)->Copy());
         }
     }
 

@@ -1,0 +1,38 @@
+name: Build Windows Terminal
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (x64 Release)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+        with:
+          nuget-version: 'latest'
+
+      - name: Restore NuGet Packages
+        run: |
+          nuget restore OpenConsole.slnx
+          nuget restore dep/nuget/packages.config
+
+      - name: Build Solution
+        run: |
+          msbuild OpenConsole.slnx /p:Configuration=Release /p:Platform=x64 /m

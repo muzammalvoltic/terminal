@@ -42,6 +42,7 @@ public:
     std::optional<winrt::Microsoft::Terminal::Settings::Model::LaunchMode> GetLaunchMode() const noexcept;
     std::optional<winrt::Microsoft::Terminal::Settings::Model::LaunchPosition> GetPosition() const noexcept;
     std::optional<til::size> GetSize() const noexcept;
+    std::optional<winrt::hstring> GetWorkspaceName() const noexcept;
 
     int ParseArgs(const winrt::Microsoft::Terminal::Settings::Model::ExecuteCommandlineArgs& args);
     void DisableHelpInExitMessage();
@@ -137,6 +138,7 @@ private:
 
     int _loadPersistedLayoutIdx{};
     std::string _windowTarget{};
+    std::string _workspaceName{};
     // Are you adding more args or attributes here? If they are not reset in _resetStateToDefault, make sure to reset them in FullResetState
 
     winrt::Microsoft::Terminal::Settings::Model::NewTerminalArgs _getNewTerminalArgs(NewTerminalSubcommand& subcommand);

@@ -1,0 +1,26 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+import "ActionArgs.idl";
+
+namespace Microsoft.Terminal.Settings.Model
+{
+    [default_interface]
+    runtimeclass WorkspaceTabItem
+    {
+        WorkspaceTabItem();
+        String Name;
+        String Commandline;
+    };
+
+    [default_interface]
+    runtimeclass Workspace
+    {
+        Workspace();
+
+        String Name;
+        Windows.Foundation.Collections.IVector<ActionAndArgs> TabLayout;
+
+        Workspace Copy();
+    };
+}

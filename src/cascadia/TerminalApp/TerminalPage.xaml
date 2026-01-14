@@ -8,6 +8,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:TerminalApp"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:model="using:Microsoft.Terminal.Settings.Model"
       xmlns:mtu="using:Microsoft.Terminal.UI"
       xmlns:mux="using:Microsoft.UI.Xaml.Controls"
       Background="Transparent"
@@ -204,6 +205,60 @@
                 </TextBox>
             </mux:TeachingTip.Content>
         </mux:TeachingTip>
+
+        <mux:TeachingTip x:Name="WorkspaceRenamer"
+                         x:Uid="WorkspaceRenamer"
+                         x:Load="False"
+                         ActionButtonClick="_WorkspaceRenamerActionClick"
+                         ActionButtonStyle="{ThemeResource AccentButtonStyle}"
+                         IsLightDismissEnabled="True">
+            <mux:TeachingTip.Content>
+                <TextBox x:Name="WorkspaceRenamerTextBox"
+                         KeyDown="_WorkspaceRenamerKeyDown"
+                         KeyUp="_WorkspaceRenamerKeyUp">
+                    <TextBox.ContextFlyout>
+                        <mtu:TextMenuFlyout />
+                    </TextBox.ContextFlyout>
+                </TextBox>
+            </mux:TeachingTip.Content>
+        </mux:TeachingTip>
+
+        <ContentDialog x:Name="SaveWorkspaceDialog"
+                       x:Uid="SaveWorkspaceDialog"
+                       Grid.Row="2"
+                       x:Load="False"
+                       PrimaryButtonClick="_SaveWorkspaceDialogPrimaryClick"
+                       DefaultButton="Primary">
+            <StackPanel>
+                <TextBox x:Name="WorkspaceNameTextBox"
+                         x:Uid="WorkspaceNameTextBox"
+                         Margin="0,0,0,12">
+                    <TextBox.ContextFlyout>
+                        <mtu:TextMenuFlyout />
+                    </TextBox.ContextFlyout>
+                </TextBox>
+                <ListView x:Name="WorkspaceTabListView"
+                          SelectionMode="None"
+                          MaxHeight="300">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="model:WorkspaceTabItem">
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{x:Bind Name, Mode=TwoWay}"
+                                         x:Uid="WorkspaceTabNameTextBox"
+                                         Margin="0,0,8,0" />
+                                <TextBox Grid.Column="1"
+                                         Text="{x:Bind Commandline, Mode=TwoWay}"
+                                         x:Uid="WorkspaceTabCommandTextBox" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </ContentDialog>
 
         <mux:TeachingTip x:Name="WindowCwdToast"
                          x:Uid="WindowCwdToast"

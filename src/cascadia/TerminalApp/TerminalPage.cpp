@@ -959,6 +959,31 @@ namespace winrt::TerminalApp::implementation
             newTabFlyout.Items().Append(item);
         }
 
+        // Add Workspaces sub-menu
+        auto workspaces = _settings.GlobalSettings().Workspaces();
+        if (workspaces.Size() > 0)
+        {
+            auto workspacesSubMenu = WUX::Controls::MenuFlyoutSubItem{};
+            workspacesSubMenu.Text(RS_(L"WorkspacesMenuItem"));
+
+            WUX::Controls::FontIcon workspaceIcon{};
+            workspaceIcon.Glyph(L"\xEDC6");
+            workspaceIcon.FontFamily(Media::FontFamily{ L"Segoe Fluent Icons, Segoe MDL2 Assets" });
+            workspacesSubMenu.Icon(workspaceIcon);
+
+            for (const auto& workspace : workspaces)
+            {
+                auto workspaceItem = WUX::Controls::MenuFlyoutItem{};
+                workspaceItem.Text(workspace.Name());
+
+                workspaceItem.Click([this, workspace](auto&&, auto&&) {
+                    _OpenWorkspace(workspace);
+                });
+                workspacesSubMenu.Items().Append(workspaceItem);
+            }
+            newTabFlyout.Items().Append(workspacesSubMenu);
+        }
+
         // add menu separator
         auto separatorItem = WUX::Controls::MenuFlyoutSeparator{};
         newTabFlyout.Items().Append(separatorItem);
@@ -2055,6 +2080,7 @@ namespace winrt::TerminalApp::implementation
         hostingTab.TaskbarProgressChanged({ get_weak(), &TerminalPage::_SetTaskbarProgressHandler });
 
         hostingTab.RestartTerminalRequested({ get_weak(), &TerminalPage::_restartPaneConnection });
+        hostingTab.AddToWorkspaceRequested({ get_weak(), &TerminalPage::_OnAddToWorkspaceRequested });
     }
 
     // Method Description:
@@ -2103,6 +2129,20 @@ namespace winrt::TerminalApp::implementation
             return tabImpl->NavigateFocus(direction);
         }
         return false;
+    }
+
+    void TerminalPage::_OnAddToWorkspaceRequested(winrt::TerminalApp::Tab /*tab*/, Windows::Foundation::IInspectable /*args*/)
+    {
+        WorkspaceTabItems().Clear();
+        for (const auto& tab : _tabs)
+        {
+            auto item = winrt::make_self<winrt::Microsoft::Terminal::Settings::Model::implementation::WorkspaceTabItem>();
+            item->Name(tab.Title());
+            WorkspaceTabItems().Append(*item);
+        }
+
+        auto dialog = SaveWorkspaceDialog();
+        dialog.ShowAsync();
     }
 
     // Method Description:
@@ -4618,6 +4658,130 @@ namespace winrt::TerminalApp::implementation
         }
     }
 
+    void TerminalPage::_WorkspaceRenamerActionClick(const IInspectable& /*sender*/, const IInspectable& /*eventArgs*/)
+    {
+        const auto name = WorkspaceRenamerTextBox().Text();
+        if (!name.empty())
+        {
+            _SaveWorkspace(name);
+        }
+        WorkspaceRenamer().IsOpen(false);
+    }
+
+    void TerminalPage::_WorkspaceRenamerKeyDown(const IInspectable& /*sender*/, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e)
+    {
+        if (e.Key() == VirtualKey::Enter)
+        {
+            _workspaceRenamerPressedEnter = true;
+            e.Handled(true);
+        }
+    }
+
+    void TerminalPage::_WorkspaceRenamerKeyUp(const IInspectable& /*sender*/, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e)
+    {
+        if (e.Key() == VirtualKey::Enter && _workspaceRenamerPressedEnter)
+        {
+            _WorkspaceRenamerActionClick(nullptr, nullptr);
+            e.Handled(true);
+        }
+        else if (e.Key() == VirtualKey::Escape)
+        {
+            WorkspaceRenamer().IsOpen(false);
+            e.Handled(true);
+        }
+        _workspaceRenamerPressedEnter = false;
+    }
+
+    void TerminalPage::_SaveWorkspace(winrt::hstring name)
+    {
+        const auto tabCount = _tabs.Size();
+        if (tabCount == 0)
+        {
+            return;
+        }
+
+        const auto customItems = WorkspaceTabItems();
+        std::vector<ActionAndArgs> actions;
+        for (uint32_t i = 0; i < tabCount; ++i)
+        {
+            auto tab = _tabs.GetAt(i);
+            auto t = winrt::get_self<implementation::Tab>(tab);
+            auto tabActions = t->BuildStartupActions(BuildStartupKind::Persist);
+
+            if (i < customItems.Size())
+            {
+                const auto customItem = customItems.GetAt(i);
+                const auto customName = customItem.Name();
+                const auto customCommand = customItem.Commandline();
+
+                bool nameApplied = false;
+                for (auto& action : tabActions)
+                {
+                    if (action.Action() == ShortcutAction::NewTab)
+                    {
+                        if (auto args = action.Args().try_as<NewTabArgs>())
+                        {
+                            if (auto terminalArgs = args.ContentArgs().try_as<NewTerminalArgs>())
+                            {
+                                if (!customName.empty())
+                                {
+                                    terminalArgs.TabTitle(customName);
+                                    nameApplied = true;
+                                }
+                                if (!customCommand.empty())
+                                {
+                                    terminalArgs.Commandline(customCommand);
+                                }
+                            }
+                        }
+                    }
+                    else if (action.Action() == ShortcutAction::RenameTab)
+                    {
+                        if (!customName.empty())
+                        {
+                            action.Args(RenameTabArgs{ customName });
+                            nameApplied = true;
+                        }
+                    }
+                }
+
+                if (!nameApplied && !customName.empty())
+                {
+                    ActionAndArgs renameTabAction{};
+                    renameTabAction.Action(ShortcutAction::RenameTab);
+                    renameTabAction.Args(RenameTabArgs{ customName });
+                    tabActions.emplace_back(std::move(renameTabAction));
+                }
+            }
+
+            actions.insert(actions.end(), std::make_move_iterator(tabActions.begin()), std::make_move_iterator(tabActions.end()));
+        }
+
+        if (actions.empty())
+        {
+            return;
+        }
+
+        Workspace newWorkspace;
+        newWorkspace.Name(name);
+        newWorkspace.TabLayout(winrt::single_threaded_vector<ActionAndArgs>(std::move(actions)));
+
+        const auto globalSettings = _settings.GlobalSettings();
+        globalSettings.Workspaces().Append(newWorkspace);
+        _settings.WriteSettingsToDefaultFile();
+
+        ActionSaved(L"", name, L"");
+    }
+
+    void TerminalPage::_SaveWorkspaceDialogPrimaryClick(const winrt::Windows::UI::Xaml::Controls::ContentDialog& /*sender*/, const winrt::Windows::UI::Xaml::Controls::ContentDialogPrimaryButtonClickEventArgs& /*args*/)
+    {
+        const auto name = WorkspaceNameTextBox().Text();
+        if (!name.empty())
+        {
+            _SaveWorkspace(name);
+        }
+    }
+
     // Method Description:
     // - This function stops people from duplicating the base profile, because
     //   it gets ~ ~ weird ~ ~ when they do. Remove when TODO GH#5047 is done.
@@ -5725,5 +5889,16 @@ namespace winrt::TerminalApp::implementation
         profileMenuItemFlyout.Items().Append(runAsAdminItem);
 
         return profileMenuItemFlyout;
+    }
+
+    safe_void_coroutine TerminalPage::_OpenWorkspace(Microsoft::Terminal::Settings::Model::Workspace workspace)
+    {
+        auto layout = workspace.TabLayout();
+        std::vector<ActionAndArgs> actions;
+        for (const auto& action : layout)
+        {
+            actions.push_back(action);
+        }
+        co_await ProcessStartupActions(std::move(actions));
     }
 }

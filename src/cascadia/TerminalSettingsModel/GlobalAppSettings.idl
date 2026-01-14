@@ -7,6 +7,7 @@ import "Theme.idl";
 import "ColorScheme.idl";
 import "ActionMap.idl";
 import "NewTabMenuEntry.idl";
+import "Workspace.idl";
 
 namespace Microsoft.Terminal.Settings.Model
 {
@@ -106,6 +107,7 @@ namespace Microsoft.Terminal.Settings.Model
         INHERITABLE_SETTING(Boolean, EnableUnfocusedAcrylic);
         INHERITABLE_SETTING(Boolean, AllowHeadless);
         INHERITABLE_SETTING(String, SearchWebDefaultQueryUrl);
+        INHERITABLE_SETTING(IVector<Workspace>, Workspaces);
 
         Windows.Foundation.Collections.IMapView<String, ColorScheme> ColorSchemes();
         void AddColorScheme(ColorScheme scheme);

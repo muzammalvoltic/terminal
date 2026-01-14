@@ -160,6 +160,26 @@ namespace winrt::TerminalApp::implementation
         {
             _root->SetStartupActions(std::move(_initialContentArgs));
         }
+        else if (const auto workspaceName = parsedArgs.GetWorkspaceName())
+        {
+            const auto workspaces = _settings.GlobalSettings().Workspaces();
+            bool found = false;
+            for (const auto& w : workspaces)
+            {
+                if (w.Name() == workspaceName.value())
+                {
+                    _root->SetStartupActions(wil::to_vector(w.TabLayout()));
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                // If not found, fall back to normal command line actions
+                _root->SetStartupActions(parsedArgs.GetStartupActions());
+            }
+        }
         else if (const auto& layout = LoadPersistedLayout())
         {
             // layout will only ever be non-null if there were >0 tabs persisted in

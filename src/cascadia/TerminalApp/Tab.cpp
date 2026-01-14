@@ -1652,6 +1652,23 @@ namespace winrt::TerminalApp::implementation
             Automation::AutomationProperties::SetHelpText(renameTabMenuItem, renameTabToolTip);
         }
 
+        Controls::MenuFlyoutItem addToWorkspaceMenuItem;
+        {
+            // "Add to workspace"
+            Controls::FontIcon addToWorkspaceSymbol;
+            addToWorkspaceSymbol.FontFamily(Media::FontFamily{ L"Segoe Fluent Icons, Segoe MDL2 Assets" });
+            addToWorkspaceSymbol.Glyph(L"\xEDC6"); // Pen Workspace
+
+            addToWorkspaceMenuItem.Click({ get_weak(), &Tab::_addToWorkspaceClicked });
+            addToWorkspaceMenuItem.Text(RS_(L"TabAddToWorkspaceText"));
+            addToWorkspaceMenuItem.Icon(addToWorkspaceSymbol);
+
+            const auto addToWorkspaceToolTip = RS_(L"TabAddToWorkspaceToolTip");
+
+            WUX::Controls::ToolTipService::SetToolTip(addToWorkspaceMenuItem, box_value(addToWorkspaceToolTip));
+            Automation::AutomationProperties::SetHelpText(addToWorkspaceMenuItem, addToWorkspaceToolTip);
+        }
+
         Controls::MenuFlyoutItem duplicateTabMenuItem;
         {
             // "Duplicate tab"
@@ -1759,6 +1776,7 @@ namespace winrt::TerminalApp::implementation
         Controls::MenuFlyoutSeparator menuSeparator;
         contextMenuFlyout.Items().Append(chooseColorMenuItem);
         contextMenuFlyout.Items().Append(renameTabMenuItem);
+        contextMenuFlyout.Items().Append(addToWorkspaceMenuItem);
         contextMenuFlyout.Items().Append(duplicateTabMenuItem);
         contextMenuFlyout.Items().Append(splitTabMenuItem);
         _AppendMoveMenuItems(contextMenuFlyout);
@@ -2672,6 +2690,12 @@ namespace winrt::TerminalApp::implementation
         ActionAndArgs actionAndArgs{ ShortcutAction::Find, nullptr };
         _dispatch.DoAction(*this, actionAndArgs);
     }
+
+    void Tab::_addToWorkspaceClicked(const winrt::Windows::Foundation::IInspectable& /*sender*/, const winrt::Windows::UI::Xaml::RoutedEventArgs& /*e*/)
+    {
+        AddToWorkspaceRequested.raise(*this, nullptr);
+    }
+
     void Tab::_bubbleRestartTerminalRequested(TerminalApp::TerminalPaneContent sender,
                                               const winrt::Windows::Foundation::IInspectable& args)
     {

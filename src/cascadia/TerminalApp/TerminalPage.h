@@ -210,6 +210,7 @@ namespace winrt::TerminalApp::implementation
         WINRT_OBSERVABLE_PROPERTY(winrt::hstring, SavedActionName, PropertyChanged.raise, L"");
         WINRT_OBSERVABLE_PROPERTY(winrt::hstring, SavedActionKeyChord, PropertyChanged.raise, L"");
         WINRT_OBSERVABLE_PROPERTY(winrt::hstring, SavedActionCommandLine, PropertyChanged.raise, L"");
+        WINRT_OBSERVABLE_PROPERTY(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Terminal::Settings::Model::WorkspaceTabItem>, WorkspaceTabItems, PropertyChanged.raise, winrt::single_threaded_observable_vector<winrt::Microsoft::Terminal::Settings::Model::WorkspaceTabItem>());
 
     private:
         friend struct TerminalPageT<TerminalPage>; // for Xaml to bind events
@@ -277,6 +278,9 @@ namespace winrt::TerminalApp::implementation
         winrt::Windows::UI::Xaml::Controls::TextBox::LayoutUpdated_revoker _renamerLayoutUpdatedRevoker;
         int _renamerLayoutCount{ 0 };
         bool _renamerPressedEnter{ false };
+        winrt::Windows::UI::Xaml::Controls::TextBox::LayoutUpdated_revoker _workspaceRenamerLayoutUpdatedRevoker;
+        int _workspaceRenamerLayoutCount{ 0 };
+        bool _workspaceRenamerPressedEnter{ false };
 
         TerminalApp::WindowProperties _WindowProperties{ nullptr };
         PaneResources _paneResources;
@@ -516,6 +520,10 @@ namespace winrt::TerminalApp::implementation
         void _RequestWindowRename(const winrt::hstring& newName);
         void _WindowRenamerKeyDown(const IInspectable& sender, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e);
         void _WindowRenamerKeyUp(const IInspectable& sender, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e);
+        void _WorkspaceRenamerActionClick(const IInspectable& sender, const IInspectable& eventArgs);
+        void _WorkspaceRenamerKeyDown(const IInspectable& sender, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e);
+        void _WorkspaceRenamerKeyUp(const IInspectable& sender, const winrt::Windows::UI::Xaml::Input::KeyRoutedEventArgs& e);
+        void _SaveWorkspaceDialogPrimaryClick(const winrt::Windows::UI::Xaml::Controls::ContentDialog& sender, const winrt::Windows::UI::Xaml::Controls::ContentDialogPrimaryButtonClickEventArgs& args);
 
         void _UpdateTeachingTipTheme(winrt::Windows::UI::Xaml::FrameworkElement element);
 
@@ -535,6 +543,8 @@ namespace winrt::TerminalApp::implementation
         void _updateThemeColors();
         void _updateAllTabCloseButtons();
         void _updatePaneResources(const winrt::Windows::UI::Xaml::ElementTheme& requestedTheme);
+
+        safe_void_coroutine _OpenWorkspace(Microsoft::Terminal::Settings::Model::Workspace workspace);
 
         safe_void_coroutine _ControlCompletionsChangedHandler(const winrt::Windows::Foundation::IInspectable sender, const winrt::Microsoft::Terminal::Control::CompletionsChangedEventArgs args);
 
@@ -568,6 +578,7 @@ namespace winrt::TerminalApp::implementation
         winrt::com_ptr<Tab> _senderOrFocusedTab(const IInspectable& sender);
 
         void _activePaneChanged(winrt::TerminalApp::Tab tab, Windows::Foundation::IInspectable args);
+        void _OnAddToWorkspaceRequested(winrt::TerminalApp::Tab tab, Windows::Foundation::IInspectable args);
         safe_void_coroutine _doHandleSuggestions(Microsoft::Terminal::Settings::Model::SuggestionsArgs realArgs);
 
 #pragma region ActionHandlers

@@ -200,6 +200,10 @@ void AppCommandlineArgs::_buildParser()
                     _loadPersistedLayoutIdx,
                     RS_A(L"CmdSavedLayoutArgDesc"));
 
+    _app.add_option("-W,--workspace",
+                    _workspaceName,
+                    RS_A(L"CmdWorkspaceArgDesc"));
+
     // Subcommands
     _buildNewTabParser();
     _buildSplitPaneParser();
@@ -814,6 +818,7 @@ void AppCommandlineArgs::_resetStateToDefault()
 
     _focusPaneTarget = -1;
     _loadPersistedLayoutIdx = -1;
+    _workspaceName.clear();
 
     // DON'T clear _launchMode here! This will get called once for every
     // subcommand, so we don't want `wt -F new-tab ; split-pane` clearing out
@@ -1033,6 +1038,13 @@ std::optional<uint32_t> AppCommandlineArgs::GetPersistedLayoutIdx() const noexce
                std::nullopt;
 }
 
+std::optional<winrt::hstring> AppCommandlineArgs::GetWorkspaceName() const noexcept
+{
+    return !_workspaceName.empty() ?
+               std::optional{ winrt::to_hstring(_workspaceName) } :
+               std::nullopt;
+}
+
 std::optional<winrt::Microsoft::Terminal::Settings::Model::LaunchMode> AppCommandlineArgs::GetLaunchMode() const noexcept
 {
     return _launchMode;
@@ -1174,6 +1186,7 @@ void AppCommandlineArgs::FullResetState()
     _shouldExitEarly = false;
 
     _windowTarget = {};
+    _workspaceName.clear();
 }
 
 std::string_view AppCommandlineArgs::GetTargetWindow() const noexcept

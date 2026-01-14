@@ -799,6 +799,51 @@
   <data name="ExportTabToolTip" xml:space="preserve">
     <value>Export the contents of the text buffer into a text file</value>
   </data>
+  <data name="TabAddToWorkspaceText" xml:space="preserve">
+    <value>Add to workspace</value>
+  </data>
+  <data name="TabAddToWorkspaceToolTip" xml:space="preserve">
+    <value>Save this tab collection as a workspace</value>
+  </data>
+  <data name="WorkspaceRenamer.Title" xml:space="preserve">
+    <value>Save workspace</value>
+  </data>
+  <data name="WorkspaceRenamer.Subtitle" xml:space="preserve">
+    <value>Enter a name for this workspace:</value>
+  </data>
+  <data name="WorkspaceRenamer.ActionButtonContent" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WorkspaceRenamer.CloseButtonContent" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="WorkspaceRenamer.Title" xml:space="preserve">
+    <value>Save workspace</value>
+  </data>
+  <data name="WorkspacesMenuItem" xml:space="preserve">
+    <value>Workspaces</value>
+  </data>
+  <data name="CmdWorkspaceArgDesc" xml:space="preserve">
+    <value>Launch Windows Terminal with the specified workspace</value>
+  </data>
+  <data name="SaveWorkspaceDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveWorkspaceDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SaveWorkspaceDialog.Title" xml:space="preserve">
+    <value>Save workspace</value>
+  </data>
+  <data name="WorkspaceNameTextBox.Header" xml:space="preserve">
+    <value>Workspace name:</value>
+  </data>
+  <data name="WorkspaceTabNameTextBox.Header" xml:space="preserve">
+    <value>Tab name:</value>
+  </data>
+  <data name="WorkspaceTabCommandTextBox.Header" xml:space="preserve">
+    <value>Command:</value>
+  </data>
   <data name="FindToolTip" xml:space="preserve">
     <value>Open the search dialog</value>
   </data>
