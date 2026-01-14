@@ -20,12 +20,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: List Windows SDKs
-        run: |
-          Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" | Select-Object -ExpandProperty Property
-          ls "C:\Program Files (x86)\Windows Kits\10\Include"
-        shell: pwsh
-
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
@@ -36,6 +30,7 @@ jobs:
 
       - name: Restore NuGet Packages
         run: |
+          nuget restore dep/nuget/packages.config -SolutionDirectory .
           dotnet restore OpenConsole.slnx
 
       - name: Build Solution

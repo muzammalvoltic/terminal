@@ -268,12 +268,14 @@ function Invoke-OpenConsoleTests()
 function Invoke-OpenConsoleBuild()
 {
     $root = Find-OpenConsoleRoot
-    if ($root -and (Test-Path "$root\OpenConsole.slnx")) {
-        dotnet restore "$root\OpenConsole.slnx"
-    } else {
-        & "$root\dep\nuget\nuget.exe" restore "$root\OpenConsole.slnx"
-        & "$root\dep\nuget\nuget.exe" restore "$root\dep\nuget\packages.config"
-    }
+    
+    # Always restore the global packages.config (crucial for C++ projects)
+    # Use -SolutionDirectory so it puts things into a 'packages' folder at the root
+    & "$root\dep\nuget\nuget.exe" restore "$root\dep\nuget\packages.config" -SolutionDirectory "$root"
+    
+    # Restore the solution using dotnet (which supports .slnx)
+    dotnet restore "$root\OpenConsole.slnx"
+    
     msbuild.exe "$root\OpenConsole.slnx" @args
 }
 
