@@ -20,6 +20,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
@@ -32,7 +37,7 @@ jobs:
         run: |
           # Use nuget install for the global packages.config to populate the local 'packages' folder
           # This is required for the C++ projects in this repo.
-          nuget install dep/nuget/packages.config -OutputDirectory packages
+          ./dep/nuget/nuget.exe install dep/nuget/packages.config -OutputDirectory packages
           
           # Use dotnet restore for the solution to handle .NET projects and .slnx format
           dotnet restore OpenConsole.slnx

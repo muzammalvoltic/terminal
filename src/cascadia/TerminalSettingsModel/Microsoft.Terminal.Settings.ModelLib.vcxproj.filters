@@ -45,6 +45,7 @@
     <ClCompile Include="VsSetupConfiguration.cpp">
       <Filter>profileGeneration</Filter>
     </ClCompile>
+    <ClCompile Include="Workspace.cpp" />
     <ClCompile Include="TestHooks.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     </ClInclude>
     <ClInclude Include="ActionArgsMagic.h" />
     <ClInclude Include="NewTabMenuEntry.h" />
+    <ClInclude Include="Workspace.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ActionArgs.idl" />
@@ -115,6 +117,7 @@
     <Midl Include="DefaultTerminal.idl" />
     <Midl Include="ApplicationState.idl" />
     <Midl Include="NewTabMenuEntry.idl" />
+    <Midl Include="Workspace.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

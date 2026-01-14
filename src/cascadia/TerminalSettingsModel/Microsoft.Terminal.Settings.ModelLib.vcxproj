@@ -114,6 +114,9 @@
     <ClInclude Include="WslDistroGenerator.h" />
     <ClInclude Include="SshHostGenerator.h" />
     <ClInclude Include="ModelSerializationHelpers.h" />
+    <ClInclude Include="Workspace.h">
+      <DependentUpon>Workspace.idl</DependentUpon>
+    </ClInclude>
   </ItemGroup>
   <!-- ========================= Cpp Files ======================== -->
   <ItemGroup>
@@ -207,6 +210,9 @@
     <ClCompile Include="VsSetupConfiguration.cpp" />
     <ClCompile Include="WslDistroGenerator.cpp" />
     <ClCompile Include="SshHostGenerator.cpp" />
+    <ClCompile Include="Workspace.cpp">
+      <DependentUpon>Workspace.idl</DependentUpon>
+    </ClCompile>
     <ClCompile Include="TestHooks.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
@@ -230,6 +236,7 @@
     <Midl Include="IAppearanceConfig.idl" />
     <Midl Include="ISettingsModelObject.idl" />
     <Midl Include="FontConfig.idl" />
+    <Midl Include="Workspace.idl" />
   </ItemGroup>
   <!-- ========================= Misc Files ======================== -->
   <ItemGroup>
