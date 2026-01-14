@@ -268,8 +268,12 @@ function Invoke-OpenConsoleTests()
 function Invoke-OpenConsoleBuild()
 {
     $root = Find-OpenConsoleRoot
-    & "$root\dep\nuget\nuget.exe" restore "$root\OpenConsole.slnx"
-    & "$root\dep\nuget\nuget.exe" restore "$root\dep\nuget\packages.config"
+    if ($root -and (Test-Path "$root\OpenConsole.slnx")) {
+        dotnet restore "$root\OpenConsole.slnx"
+    } else {
+        & "$root\dep\nuget\nuget.exe" restore "$root\OpenConsole.slnx"
+        & "$root\dep\nuget\nuget.exe" restore "$root\dep\nuget\packages.config"
+    }
     msbuild.exe "$root\OpenConsole.slnx" @args
 }
 
