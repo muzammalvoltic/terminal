@@ -331,12 +331,12 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
         return static_cast<std::string>(UnboundKey);
     }
 
-    com_ptr<ActionAndArgs> ActionAndArgs::Copy() const
+    Model::ActionAndArgs ActionAndArgs::Copy() const
     {
         auto copy{ winrt::make_self<ActionAndArgs>() };
         copy->_Action = _Action;
         copy->_Args = _Args ? _Args.Copy() : IActionArgs{ nullptr };
-        return copy;
+        return *copy;
     }
 
     winrt::hstring ActionAndArgs::GenerateName(const winrt::Windows::ApplicationModel::Resources::Core::ResourceContext& context) const

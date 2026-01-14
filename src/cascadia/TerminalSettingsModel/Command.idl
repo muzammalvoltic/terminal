@@ -30,6 +30,8 @@ namespace Microsoft.Terminal.Settings.Model
 
         IActionArgs Args;
         ShortcutAction Action;
+
+        ActionAndArgs Copy();
     };
 
     runtimeclass Command : ISettingsModelObject

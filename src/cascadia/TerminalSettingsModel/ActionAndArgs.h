@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
         ActionAndArgs(ShortcutAction action, IActionArgs args) :
             _Action{ action },
             _Args{ args } {};
-        com_ptr<ActionAndArgs> Copy() const;
+        Model::ActionAndArgs Copy() const;
 
         hstring GenerateName(const winrt::Windows::ApplicationModel::Resources::Core::ResourceContext& context) const;
         hstring GenerateName() const;
@@ -37,6 +37,8 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
 namespace winrt::Microsoft::Terminal::Settings::Model::factory_implementation
 {
     BASIC_FACTORY(ActionAndArgs);
+    BASIC_FACTORY(Workspace);
+    BASIC_FACTORY(WorkspaceTabItem);
 }
 
 namespace Microsoft::Terminal::Settings::Model::JsonUtils
