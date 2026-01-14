@@ -37,8 +37,6 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
 namespace winrt::Microsoft::Terminal::Settings::Model::factory_implementation
 {
     BASIC_FACTORY(ActionAndArgs);
-    BASIC_FACTORY(Workspace);
-    BASIC_FACTORY(WorkspaceTabItem);
 }
 
 namespace Microsoft::Terminal::Settings::Model::JsonUtils

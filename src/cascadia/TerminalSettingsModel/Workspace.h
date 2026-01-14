@@ -78,3 +78,9 @@ namespace Microsoft::Terminal::Settings::Model::JsonUtils
         }
     };
 }
+
+namespace winrt::Microsoft::Terminal::Settings::Model::factory_implementation
+{
+    BASIC_FACTORY(Workspace);
+    BASIC_FACTORY(WorkspaceTabItem);
+}
