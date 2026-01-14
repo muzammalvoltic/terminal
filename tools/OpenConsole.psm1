@@ -269,13 +269,13 @@ function Invoke-OpenConsoleBuild()
 {
     $root = Find-OpenConsoleRoot
     
-    # Always restore the global packages.config (crucial for C++ projects)
-    # Use -SolutionDirectory so it puts things into a 'packages' folder at the root
-    & "$root\dep\nuget\nuget.exe" restore "$root\dep\nuget\packages.config" -SolutionDirectory "$root"
+    # Restore global C++ packages into the local 'packages' directory
+    & "$root\dep\nuget\nuget.exe" install "$root\dep\nuget\packages.config" -OutputDirectory "$root\packages"
     
-    # Restore the solution using dotnet (which supports .slnx)
+    # Restore the solution (.NET projects and core dependencies)
     dotnet restore "$root\OpenConsole.slnx"
     
+    # Build with MSBuild
     msbuild.exe "$root\OpenConsole.slnx" @args
 }
 

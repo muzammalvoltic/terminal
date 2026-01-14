@@ -30,7 +30,11 @@ jobs:
 
       - name: Restore NuGet Packages
         run: |
-          nuget restore dep/nuget/packages.config -SolutionDirectory .
+          # Use nuget install for the global packages.config to populate the local 'packages' folder
+          # This is required for the C++ projects in this repo.
+          nuget install dep/nuget/packages.config -OutputDirectory packages
+          
+          # Use dotnet restore for the solution to handle .NET projects and .slnx format
           dotnet restore OpenConsole.slnx
 
       - name: Build Solution
